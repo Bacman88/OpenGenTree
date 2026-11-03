@@ -38,6 +38,9 @@ export interface ReferenceManifest {
     sha256: string;
     persons: number;
     partnerships: number;
+    /** The person the tree opens on (the ancestor linked to the most people). */
+    focus?: string;
+    focusName?: string;
 }
 
 export const REFERENCE_TREES: readonly ReferenceDefinition[] = [
@@ -170,6 +173,17 @@ export function verifyTreeBytes(manifest: ReferenceManifest, bytes: ArrayBuffer,
 
 // ---------- the app's UI, reached at call time ----------
 
+type RendererLike = { setFocus?(id: string): void; resetFocusHistory?(): void };
+function renderer(): RendererLike {
+    return ((window as unknown as { Strom?: { TreeRenderer?: RendererLike } }).Strom?.TreeRenderer) ?? {};
+}
+/** Open the tree on the manifest's start person, when it is in the data. */
+function focusStart(manifest: Pick<ReferenceManifest, 'focus'>, data: StromData): void {
+    if (!manifest.focus || !(data.persons as Record<string, unknown>)[manifest.focus]) return;
+    renderer().setFocus?.(manifest.focus);
+    renderer().resetFocusHistory?.();
+}
+
 type UiLike = {
     showToast?(message: string, duration?: number): void;
     updateTreeSwitcher?(): void;
@@ -245,6 +259,7 @@ export async function openReferenceTree(def: ReferenceDefinition = REFERENCE_TRE
     lockTree(id);
     writeRecords({ ...pruneRecords(), [id]: { ref: def.id, version: manifest.version } });
     invalidateCache();
+    focusStart(manifest, data);
     refreshTreeUi(id);
     toast(t().added, 6000);
 }

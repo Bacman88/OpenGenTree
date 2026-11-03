@@ -238,3 +238,44 @@ export function reviewMarkdown(report: PrepareReport, title: string): string {
         ...rest.map(item),
     ].join('\n');
 }
+
+/** The person a reference tree opens on. */
+export interface FocusPick { id: string; name: string; descendants: number }
+
+/**
+ * The ancestor linked to the most people: the most descendants among persons
+ * with a birth date (a dated, real person rather than an empty stand-in),
+ * then more children, then the earlier birth. Private links and nameless
+ * records never qualify. Null for a tree without such a person.
+ */
+export function pickFocusPerson(data: StromData): FocusPick | null {
+    const persons = data.persons as Record<string, Person>;
+    const memo = new Map<string, Set<string>>();
+    const descendantsOf = (id: string): Set<string> => {
+        const done = memo.get(id);
+        if (done) return done;
+        const seen = new Set<string>();
+        const stack = [...(persons[id]?.childIds ?? [])] as string[];
+        while (stack.length) {
+            const c = stack.pop()!;
+            if (seen.has(c) || !persons[c]) continue;
+            seen.add(c);
+            stack.push(...(persons[c].childIds ?? []));
+        }
+        memo.set(id, seen);
+        return seen;
+    };
+    let best: { p: Person; n: number; born: number } | null = null;
+    for (const p of Object.values(persons)) {
+        if (p.isPlaceholder || isPrivateLink(p) || isNameless(p)) continue;
+        const born = yearOf(p.birthDate);
+        if (born === null) continue;
+        const n = descendantsOf(p.id).size;
+        if (!best || n > best.n
+            || (n === best.n && (p.childIds?.length ?? 0) > (best.p.childIds?.length ?? 0))
+            || (n === best.n && (p.childIds?.length ?? 0) === (best.p.childIds?.length ?? 0) && born < best.born)) {
+            best = { p, n, born };
+        }
+    }
+    return best && best.n > 0 ? { id: best.p.id, name: nameOf(best.p), descendants: best.n } : null;
+}
