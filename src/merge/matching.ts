@@ -7,6 +7,7 @@ import { parseFlexDate, yearOf } from '../dates.js';
 import { PersonId, Person, Partnership, StromData, gendersCompatible } from '../types.js';
 import { sameSurname } from '../surnames.js';
 import { givenNameKey } from '../given-names.js';
+import { adjustSurnameSimilarity, adjustGivenNameSimilarity, adjustPlaceSimilarity } from '../ogt/variants/index.js'; // OGT-040
 import { detectPartnershipConflicts, AUTO_CONFIRM_SCORE } from './executor.js';
 import {
     PersonMatch,
@@ -79,7 +80,7 @@ export function givenNameSimilarity(a: string, b: string): number {
     const nb = normalizeName(b);
     if (!na || !nb) return 0;
     if (givenNameKey(na) === givenNameKey(nb)) return 1;
-    return stringSimilarity(na, nb);
+    return adjustGivenNameSimilarity(na, nb, stringSimilarity(na, nb)); // OGT-040: dictionary variants (Wojciech ~ Albert)
 }
 
 /**
@@ -265,11 +266,13 @@ function lastNamesSimilar(name1: string, name2: string): { exact: boolean; simil
         return { exact: true, similar: true, similarity: 1.0 };
     }
 
-    const similarity = stringSimilarity(name1, name2);
+    // OGT-040: the variant dictionary raises an alias (Pyrek ~ Pyrrek) and
+    // sets a recorded difference (Franczyk ≠ Urbanczyk) to 0.
+    const similarity = adjustSurnameSimilarity(name1, name2, stringSimilarity(name1, name2));
 
     // Consider similar if one is prefix of other or high similarity
     const isPrefix = n1.startsWith(n2) || n2.startsWith(n1);
-    const similar = similarity >= 0.7 || isPrefix;
+    const similar = similarity >= 0.7 || (isPrefix && similarity > 0);
 
     return { exact: false, similar, similarity };
 }
@@ -907,7 +910,8 @@ function calculateMatchScore(
 
     // Birth place matching
     if (existing.birthPlace && incoming.birthPlace) {
-        const placeSimilarity = stringSimilarity(existing.birthPlace, incoming.birthPlace);
+        // OGT-040: one known location (Strzebiń ~ Strzebin, Lublinitz) up, two different known ones 0
+        const placeSimilarity = adjustPlaceSimilarity(existing.birthPlace, incoming.birthPlace, stringSimilarity(existing.birthPlace, incoming.birthPlace));
         if (placeSimilarity >= 0.9) {
             score += 12;
         } else if (placeSimilarity >= 0.7) {
@@ -958,7 +962,7 @@ function calculateRelaxedMatchScore(
     const firstNameMatch = firstNamesMatch(existing.firstName, incoming.firstName);
     const lastNameMatch = lastNamesSimilar(existing.lastName, incoming.lastName);
     const firstNameSimilarity = givenNameSimilarity(existing.firstName, incoming.firstName);
-    const lastNameSimilarity = stringSimilarity(existing.lastName, incoming.lastName);
+    const lastNameSimilarity = lastNamesSimilar(existing.lastName, incoming.lastName).similarity; // OGT-040
 
     let score = 0;
 
@@ -1084,7 +1088,7 @@ function countMatchingParents(
 
             // Check if parents match by name
             const firstNameSim = givenNameSimilarity(existingParent.firstName, incomingParent.firstName);
-            const lastNameSim = stringSimilarity(existingParent.lastName, incomingParent.lastName);
+            const lastNameSim = lastNamesSimilar(existingParent.lastName, incomingParent.lastName).similarity; // OGT-040
 
             // Accept if first name is similar (last name may differ for women)
             if (firstNameSim >= 0.85 && (lastNameSim >= 0.7 || firstNameSim >= 0.95)) {
@@ -1127,7 +1131,7 @@ function calculatePartnerMatchScore(
             if (!gendersCompatible(existingPartner.gender, incomingPartner.gender)) continue;
 
             const firstNameSim = givenNameSimilarity(existingPartner.firstName, incomingPartner.firstName);
-            const lastNameSim = stringSimilarity(existingPartner.lastName, incomingPartner.lastName);
+            const lastNameSim = lastNamesSimilar(existingPartner.lastName, incomingPartner.lastName).similarity; // OGT-040
 
             // Partner has similar name
             if (firstNameSim >= 0.85) {
@@ -1333,7 +1337,7 @@ export function quickMatch(p1: Person, p2: Person, data1?: StromData, data2?: St
         !!data && sameSurname(p1.lastName, p2.lastName, data);
     const lastNameSim = rulesSay(data1) || rulesSay(data2)
         ? 1.0
-        : stringSimilarity(p1.lastName, p2.lastName);
+        : lastNamesSimilar(p1.lastName, p2.lastName).similarity; // OGT-040: with the variant dictionary
     const nameSim = (firstNameSim + lastNameSim) / 2;
 
     // Names too different - no match

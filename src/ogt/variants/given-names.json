@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "about": "OpenGenTree OGT-040: given-name variants beyond the register-language groups of src/given-names.ts (those count as one name). Entries here are weaker links — a 'candidate' raises the given-name similarity but does not make the names equal. Aliases for search and comparison only; never used to change data.",
+  "entries": [
+    { "canonical": "Wojciech", "variants": ["Albert"], "type": "given", "status": "candidate", "region": "Górny Śląsk", "source": "rodowod-strzebin", "notes": "W rejestrach Albert bywa zapisem Wojciecha (przez Adalbert), ale bywa też samodzielnym imieniem — dlatego tylko 'candidate'. Wojciech = Adalbert = Adalbertus jest już grupą rejestrową w src/given-names.ts." }
+  ]
+}
