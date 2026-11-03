@@ -9,6 +9,7 @@
 import { AppMode, BETA_HOSTNAME, PWA_HOSTNAME } from './types.js';
 import { detectAppBrowser } from './research-transfer.js';
 import { isIosDevice } from './file-copy.js';
+import { isOgtHost } from './ogt/hosting.js'; // OGT
 
 /**
  * The hosted app's base path: /run/, for the public app and for the
@@ -43,6 +44,7 @@ export function isBetaBuild(mode: AppMode): boolean {
 export function appModeFor(hostname: string): AppMode {
     if (hostname === 'localhost' || hostname === '127.0.0.1') return 'dev';
     if (hostname === PWA_HOSTNAME || hostname === BETA_HOSTNAME || hostname === 'stromapp.local') return 'pwa';
+    if (isOgtHost(hostname)) return 'server'; // OGT: hosted app, not an exported file
     return 'embedded';
 }
 
