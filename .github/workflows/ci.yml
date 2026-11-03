@@ -1,0 +1,53 @@
+# OpenGenTree CI: checks only, publishes nothing.
+#
+# Replaces Strom's deploy.yml, which pushed builds to the author's GitLab and
+# created his releases (OGT-009). OpenGenTree is deployed by Joton.io straight
+# from GitHub (docs/ogt/DEPLOY-JOTON.md); this workflow only proves that the
+# branch builds the same publish directory Joton builds.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      # Same install as on Joton: no package install scripts run.
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npx vitest run
+
+      - name: Build publish directory
+        run: npm run build:public
+
+      - name: Check publish directory
+        run: |
+          ls -la public
+          test -s public/index.html
+          test -f public/.htaccess
+          extra=$(find public -mindepth 1 ! -name index.html ! -name .htaccess)
+          if [ -n "$extra" ]; then echo "Unexpected files in public/:"; echo "$extra"; exit 1; fi
