@@ -1289,7 +1289,7 @@ export type LayoutUnit = FamilyUnit | SingleUnit;
 // ==================== APP MODE ====================
 
 /** Application mode - PWA on stromapp.info, embedded HTML file, or dev server */
-export type AppMode = 'pwa' | 'embedded' | 'dev';
+export type AppMode = 'pwa' | 'embedded' | 'dev' | 'server'; // OGT: 'server' = hosted on an OpenGenTree domain (src/ogt/hosting.ts)
 
 /** PWA hostname for mode detection */
 export const PWA_HOSTNAME = 'stromapp.info';
