@@ -4,3 +4,4 @@
  */
 import './branding.js';     // OGT-011/012: name and version in the About dialog
 import './person-form.js';  // OGT-041: "Deceased" switch first, death fields behind it
+import './reference-tree.js';  // OGT-050: read-only reference trees (Rodowód Sołectwa Strzebiń)

@@ -22,3 +22,6 @@ e2e-results.json
 
 # TypeScript incremental typecheck
 .tsbuildinfo
+
+# OpenGenTree reference tree output (data stays out of git)
+/reference-out/
