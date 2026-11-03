@@ -1,4 +1,4 @@
-# OpenGenTree — marka i wygląd (OGT-011)
+# OpenGenTree — marka i wygląd (OGT-011, OGT-012)
 
 OpenGenTree ma własną nazwę, logo i lekko zmienioną paletę, ale układ i działanie Stroma zostają bez zmian. Informacja o autorze oryginału i licencji AGPL zostaje: okno „O programie” mówi „Fork aplikacji Strom, autor oryginału: Milan Víšek”, a nagłówek licencji w źródle strony jest nietknięty.
 
@@ -11,9 +11,17 @@ OpenGenTree ma własną nazwę, logo i lekko zmienioną paletę, ale układ i dz
 | Pasek (komputer) | „Strom” + miedziana kropka | znak + „OpenGenTree” | `prepare-public.mjs` |
 | Pasek (telefon) | ikona drzewa Stroma | znak OpenGenTree | `prepare-public.mjs` |
 | „O programie” | logo i nazwa Stroma, „Stworzył” | znak, „OpenGenTree <wersja>”, „Fork aplikacji Strom, autor oryginału:” | `prepare-public.mjs`, `src/ogt/branding.ts` |
+| Wersja w „O programie” | wersja Stroma (3.21.2) | wersja OpenGenTree (`src/ogt/version.ts`, start 0.1.0); wersja Stroma w linii o forku | `branding.ts`, `prepare-public.mjs` |
+| Pierwszy link w „O programie” | stromapp.info | opengentree.smart-ant.pl (stromapp.info w linii o forku) | `prepare-public.mjs` |
+| „Co nowego” | lista zmian Stroma | `docs/ogt/CHANGELOG.md` | `branding.ts` |
+| Linia o wsparciu | „Strom jest bezpłatny…” | „OpenGenTree bazuje na bezpłatnej aplikacji open source Strom. Możesz wesprzeć jej autora.” (link „Postaw kawę” do autora Stroma zostaje) | `branding.ts` |
 | Kolory marki | zieleń `#3f6b4f`, miedź `#b0703c` | zieleń morska `#2f6656`, cegła `#a85a3c` (+ odpowiedniki dla motywu ciemnego) | `brand.mjs` (`BRAND_CSS`) |
 
-Bez zmian zostają: układ, czcionki, kolory kart i wykresów, teksty Stroma poza oknem „O programie”, odnośniki do stromapp.info i „Postaw kawę” (wsparcie autora oryginału) oraz ikona funkcji Strom Research (osobny produkt autora).
+Bez zmian zostają: układ, czcionki, kolory kart i wykresów, teksty Stroma poza oknem „O programie”, „Postaw kawę” (wsparcie autora oryginału), okno „Co nowego” po aktualizacji (pokazuje zmiany Stroma) oraz ikona funkcji Strom Research (osobny produkt autora).
+
+## Wersja
+
+OpenGenTree ma własny numer wersji w `src/ogt/version.ts` (start: 0.1.0), podbijany przy każdym wydaniu razem z wpisem w `docs/ogt/CHANGELOG.md`. Wersja Stroma (`package.json`, `APP_VERSION`) zostaje bez zmian, bo od niej zależą format danych, sprawdzanie aktualizacji i notatki o wydaniu. Strom wpisuje swoją wersję i link „Co nowego” przy każdym otwarciu okna „O programie”; `src/ogt/branding.ts` zaraz potem przywraca wartości OpenGenTree (obserwator zmian w oknie), więc żaden plik Stroma nie musiał się zmienić.
 
 ## Znak
 

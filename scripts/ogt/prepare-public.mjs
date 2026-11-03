@@ -34,6 +34,11 @@ function fail(message) {
     process.exit(1);
 }
 
+// OpenGenTree's own version: one source, src/ogt/version.ts (the app reads it too).
+const OGT_VERSION = (readFileSync('src/ogt/version.ts', 'utf-8').match(/OGT_VERSION\s*=\s*'(\d+\.\d+\.\d+[^']*)'/) || [])[1]
+    || fail('OGT_VERSION not found in src/ogt/version.ts');
+const SITE_URL = 'https://opengentree.smart-ant.pl/';
+
 /** Replace exactly one occurrence; anything else means upstream changed. */
 function replaceOnce(text, search, replacement, what) {
     const count = text.split(search).length - 1;
@@ -94,6 +99,20 @@ html = replaceOnce(
     '<span class="about-title">Strom <span id="about-version">',
     `<span class="about-title">${BRAND_NAME} <span id="about-version">`,
     'About dialog title',
+);
+// OGT-012: the fork's version in the static page (the app keeps it there too,
+// src/ogt/branding.ts) and our site as the dialog's first link; Strom and
+// stromapp.info are named in the "fork of" line instead.
+{
+    const stamped = html.match(/<span id="about-version">[^<]*<\/span>/g) || [];
+    if (stamped.length !== 1) fail(`About dialog version: expected 1 match, found ${stamped.length}`);
+    html = html.replace(stamped[0], () => `<span id="about-version">${OGT_VERSION}</span>`);
+}
+html = replaceOnce(
+    html,
+    '<a href="https://stromapp.info" target="_blank" rel="noopener">stromapp.info</a>',
+    `<a href="${SITE_URL}" target="_blank" rel="noopener">${new URL(SITE_URL).host}</a>`,
+    'About dialog site link',
 );
 {
     // The page's own </head> is the first one; later ones live in the
