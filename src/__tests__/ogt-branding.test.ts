@@ -59,9 +59,9 @@ describe('OpenGenTree brand texts', () => {
 });
 
 describe('OpenGenTree version in the About dialog', () => {
-    it('starts at 0.1.0 and is a semantic version', () => {
-        expect(OGT_VERSION).toBe('0.1.0');
+    it('is a semantic version of its own, not Strom\'s', () => {
         expect(OGT_VERSION).toMatch(/^\d+\.\d+\.\d+/);
+        expect(OGT_VERSION).not.toBe(APP_VERSION);
     });
 
     it('replaces Strom\'s version and changelog link with OpenGenTree\'s', () => {

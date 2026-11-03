@@ -6,6 +6,8 @@
 import { parseFlexDate, yearOf } from '../dates.js';
 import { PersonId, Person, Partnership, StromData, gendersCompatible } from '../types.js';
 import { sameSurname } from '../surnames.js';
+import { givenNameKey } from '../given-names.js';
+import { adjustSurnameSimilarity, adjustGivenNameSimilarity, adjustPlaceSimilarity } from '../ogt/variants/index.js'; // OGT-040
 import { detectPartnershipConflicts, AUTO_CONFIRM_SCORE } from './executor.js';
 import {
     PersonMatch,
@@ -63,6 +65,22 @@ export function stringSimilarity(a: string, b: string): number {
     const maxLength = Math.max(normalizedA.length, normalizedB.length);
 
     return 1 - distance / maxLength;
+}
+
+/**
+ * Similarity of two given names (0..1). Register forms of one name are the
+ * same name (Józef = Josephus = Josef, Joannes = Johann = Jan): letters alone
+ * call Jan and Johann 0.17 alike, which kept the same person apart across a
+ * Latin and a Polish tree. Other names keep plain letter similarity of what
+ * is written: comparing the group keys' letters instead would make two
+ * different names look closer than they are (Maciej/Mateusz via Matěj/Matouš).
+ */
+export function givenNameSimilarity(a: string, b: string): number {
+    const na = normalizeName(a);
+    const nb = normalizeName(b);
+    if (!na || !nb) return 0;
+    if (givenNameKey(na) === givenNameKey(nb)) return 1;
+    return adjustGivenNameSimilarity(na, nb, stringSimilarity(na, nb)); // OGT-040: dictionary variants (Wojciech ~ Albert)
 }
 
 /**
@@ -155,14 +173,15 @@ function firstNamesMatch(name1: string, name2: string): { exact: boolean; firstW
         return { exact: false, firstWord: false, anyWord: false, prefix: false };
     }
 
-    // Exact match
-    if (n1 === n2) {
+    // Exact match — register forms of one name count as written alike
+    // (Józef Franciszek = Josephus Franciscus)
+    if (n1 === n2 || givenNameKey(n1) === givenNameKey(n2)) {
         return { exact: true, firstWord: true, anyWord: true, prefix: true };
     }
 
-    // Split into words
-    const words1 = n1.split(' ').filter(w => w.length > 0);
-    const words2 = n2.split(' ').filter(w => w.length > 0);
+    // Split into words, each read as its name's key (Joannes → jan)
+    const words1 = n1.split(' ').filter(w => w.length > 0).map(givenNameKey);
+    const words2 = n2.split(' ').filter(w => w.length > 0).map(givenNameKey);
 
     // First word match
     const firstWord = words1[0] === words2[0];
@@ -247,11 +266,13 @@ function lastNamesSimilar(name1: string, name2: string): { exact: boolean; simil
         return { exact: true, similar: true, similarity: 1.0 };
     }
 
-    const similarity = stringSimilarity(name1, name2);
+    // OGT-040: the variant dictionary raises an alias (Pyrek ~ Pyrrek) and
+    // sets a recorded difference (Franczyk ≠ Urbanczyk) to 0.
+    const similarity = adjustSurnameSimilarity(name1, name2, stringSimilarity(name1, name2));
 
     // Consider similar if one is prefix of other or high similarity
     const isPrefix = n1.startsWith(n2) || n2.startsWith(n1);
-    const similar = similarity >= 0.7 || isPrefix;
+    const similar = similarity >= 0.7 || (isPrefix && similarity > 0);
 
     return { exact: false, similar, similarity };
 }
@@ -803,7 +824,7 @@ function calculateMatchScore(
 
     // Analyze first names (handles middle names, multi-part names)
     const firstNameMatch = firstNamesMatch(existing.firstName, incoming.firstName);
-    const firstNameSimilarity = stringSimilarity(existing.firstName, incoming.firstName);
+    const firstNameSimilarity = givenNameSimilarity(existing.firstName, incoming.firstName);
 
     // Analyze last names (handles typos and spelling variations). Recorded name
     // variants count as this person's surname too: a family written Fischek in
@@ -889,7 +910,8 @@ function calculateMatchScore(
 
     // Birth place matching
     if (existing.birthPlace && incoming.birthPlace) {
-        const placeSimilarity = stringSimilarity(existing.birthPlace, incoming.birthPlace);
+        // OGT-040: one known location (Strzebiń ~ Strzebin, Lublinitz) up, two different known ones 0
+        const placeSimilarity = adjustPlaceSimilarity(existing.birthPlace, incoming.birthPlace, stringSimilarity(existing.birthPlace, incoming.birthPlace));
         if (placeSimilarity >= 0.9) {
             score += 12;
         } else if (placeSimilarity >= 0.7) {
@@ -939,8 +961,8 @@ function calculateRelaxedMatchScore(
     // Use improved name matching
     const firstNameMatch = firstNamesMatch(existing.firstName, incoming.firstName);
     const lastNameMatch = lastNamesSimilar(existing.lastName, incoming.lastName);
-    const firstNameSimilarity = stringSimilarity(existing.firstName, incoming.firstName);
-    const lastNameSimilarity = stringSimilarity(existing.lastName, incoming.lastName);
+    const firstNameSimilarity = givenNameSimilarity(existing.firstName, incoming.firstName);
+    const lastNameSimilarity = lastNamesSimilar(existing.lastName, incoming.lastName).similarity; // OGT-040
 
     let score = 0;
 
@@ -1065,8 +1087,8 @@ function countMatchingParents(
             if (!gendersCompatible(existingParent.gender, incomingParent.gender)) continue;
 
             // Check if parents match by name
-            const firstNameSim = stringSimilarity(existingParent.firstName, incomingParent.firstName);
-            const lastNameSim = stringSimilarity(existingParent.lastName, incomingParent.lastName);
+            const firstNameSim = givenNameSimilarity(existingParent.firstName, incomingParent.firstName);
+            const lastNameSim = lastNamesSimilar(existingParent.lastName, incomingParent.lastName).similarity; // OGT-040
 
             // Accept if first name is similar (last name may differ for women)
             if (firstNameSim >= 0.85 && (lastNameSim >= 0.7 || firstNameSim >= 0.95)) {
@@ -1108,8 +1130,8 @@ function calculatePartnerMatchScore(
             // Gender must match
             if (!gendersCompatible(existingPartner.gender, incomingPartner.gender)) continue;
 
-            const firstNameSim = stringSimilarity(existingPartner.firstName, incomingPartner.firstName);
-            const lastNameSim = stringSimilarity(existingPartner.lastName, incomingPartner.lastName);
+            const firstNameSim = givenNameSimilarity(existingPartner.firstName, incomingPartner.firstName);
+            const lastNameSim = lastNamesSimilar(existingPartner.lastName, incomingPartner.lastName).similarity; // OGT-040
 
             // Partner has similar name
             if (firstNameSim >= 0.85) {
@@ -1308,14 +1330,14 @@ export function quickMatch(p1: Person, p2: Person, data1?: StromData, data2?: St
     // 1.0) and would otherwise match on a coincidental birth year alone.
     if (!`${p1.firstName}${p1.lastName}`.trim() || !`${p2.firstName}${p2.lastName}`.trim()) return NO_QUICK_MATCH;
 
-    const firstNameSim = stringSimilarity(p1.firstName, p2.firstName);
+    const firstNameSim = givenNameSimilarity(p1.firstName, p2.firstName);
     // The same rule/group answer full matching uses (Fíšek/Fíšková is one
     // family), so cross-tree suggestions agree with the merge matcher.
     const rulesSay = (data?: StromData): boolean =>
         !!data && sameSurname(p1.lastName, p2.lastName, data);
     const lastNameSim = rulesSay(data1) || rulesSay(data2)
         ? 1.0
-        : stringSimilarity(p1.lastName, p2.lastName);
+        : lastNamesSimilar(p1.lastName, p2.lastName).similarity; // OGT-040: with the variant dictionary
     const nameSim = (firstNameSim + lastNameSim) / 2;
 
     // Names too different - no match

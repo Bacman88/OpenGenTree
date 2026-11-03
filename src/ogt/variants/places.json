@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "about": "OpenGenTree OGT-040: starting dictionary of place-name variants. Each group is ONE location with its own id, so places that share a name elsewhere are never joined. Aliases for search and comparison only; never used to change data. All starting entries are 'candidate' (to be verified). A place string matches by its leading comma-separated parts ('Strzebiń, Lubliniec, Śląskie' -> 'Strzebiń'), the longest known prefix wins.",
+  "entries": [
+    { "id": "strzebin", "canonical": "Strzebiń", "variants": ["Strzebin", "Strzebien", "Strzebień", "Trzebin", "Strzebin O.S.", "Strzebin, Lublinitz"], "type": "place", "status": "candidate", "region": "Górny Śląsk", "source": "rodowod-strzebin-analizy", "notes": "Trzebin — forma zniekształcona; do weryfikacji w kontekście." },
+    { "id": "strzebin-lazy", "canonical": "Łazy, Strzebiń", "variants": ["Laasen"], "type": "place", "status": "candidate", "region": "Górny Śląsk", "source": "rodowod-strzebin-analizy", "notes": "Część Strzebinia, odrębna jednostka. Samo „Łazy” nie jest aliasem (nazwa występuje w wielu miejscach). „Lohna” wymaga identyfikacji geograficznej przed dodaniem." },
+    { "id": "strzebin-bagno", "canonical": "Bagno, Strzebiń", "variants": [], "type": "place", "status": "candidate", "region": "Górny Śląsk", "source": "rodowod-strzebin-analizy", "notes": "Odrębna część miejscowości — nie łączyć bezwarunkowo ze Strzebiniem." },
+    { "id": "kolonia-strzebinska", "canonical": "Kolonia Strzebińska", "variants": ["Erdmannshain", "Erdmansheim"], "type": "place", "status": "candidate", "region": "Górny Śląsk", "source": "rodowod-strzebin-analizy", "notes": "Odrębna jednostka — nie łączyć bezwarunkowo ze Strzebiniem." },
+    { "id": "koszecin", "canonical": "Koszęcin", "variants": ["Koschentin"], "type": "place", "status": "candidate", "region": "Górny Śląsk", "source": "rodowod-strzebin-analizy" },
+    { "id": "prady", "canonical": "Prądy", "variants": ["Brande", "Prondy", "Prande"], "type": "place", "status": "candidate", "region": "Górny Śląsk", "source": "rodowod-strzebin-analizy" },
+    { "id": "lubsza", "canonical": "Lubsza Śl.", "variants": ["Lubscha", "Lubschau"], "type": "place", "status": "candidate", "region": "Górny Śląsk", "source": "rodowod-strzebin-analizy" },
+    { "id": "boronow", "canonical": "Boronów", "variants": ["Boronow", "Boronow O/S"], "type": "place", "status": "candidate", "region": "Górny Śląsk", "source": "rodowod-strzebin-analizy" },
+    { "id": "sadow", "canonical": "Sadów", "variants": ["Sodow"], "type": "place", "status": "candidate", "region": "Górny Śląsk", "source": "rodowod-strzebin-analizy" },
+    { "id": "babienica", "canonical": "Babienica", "variants": ["Babinitz", "Babienitz"], "type": "place", "status": "candidate", "region": "Górny Śląsk", "source": "rodowod-strzebin-analizy" },
+    { "id": "dobrodzien", "canonical": "Dobrodzień", "variants": ["Guttentag"], "type": "place", "status": "candidate", "region": "Górny Śląsk", "source": "rodowod-strzebin-analizy" }
+  ]
+}
