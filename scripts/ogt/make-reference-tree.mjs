@@ -4,6 +4,7 @@
  *   node scripts/ogt/make-reference-tree.mjs <file.ged> [--out reference-out]
  *        [--id rodowod-strzebin] [--name "Rodowód Sołectwa Strzebiń"]
  *        [--version 2026-11-03] [--cause-cutoff 1980] [--review-from 1925]
+ *        [--focus auto|<person id>]
  *
  * Reads the GEDCOM with Strom's own parser (the same rules as the app's
  * import), removes causes of recent deaths, checks privacy, and writes into
@@ -42,6 +43,7 @@ const name = opt('name', 'Rodowód Sołectwa Strzebiń');
 const version = opt('version', new Date().toISOString().slice(0, 10));
 const causeCutoffYear = +opt('cause-cutoff', '1980');
 const reviewFromYear = +opt('review-from', '1925');
+const focusArg = opt('focus', 'auto');
 if (!/^[a-z0-9-]+$/.test(id)) fail(`--id must be lower-case letters, digits and dashes: ${id}`);
 
 // ---------- Strom's parser and our checks, bundled like scripts/bundle.js does ----------
@@ -49,7 +51,7 @@ const bundled = buildSync({
     stdin: {
         contents: `
             export { decodeGedcomFile, parseGedcom, convertToStrom } from './src/ged-parser.ts';
-            export { prepareReferenceData, reviewMarkdown } from './src/ogt/reference-data.ts';
+            export { prepareReferenceData, reviewMarkdown, pickFocusPerson } from './src/ogt/reference-data.ts';
             export { STROM_DATA_VERSION } from './src/types.ts';
         `,
         resolveDir: process.cwd(),
@@ -86,6 +88,18 @@ if (report.problems.length) {
     fail('tree not written — fix the GEDCOM and run again (details in the review report)');
 }
 
+// The person the tree opens on: the ancestor linked to the most people, unless given.
+let focus = null;
+if (focusArg === 'auto') {
+    focus = lib.pickFocusPerson(data);
+} else if (data.persons[focusArg]) {
+    const p = data.persons[focusArg];
+    focus = { id: focusArg, name: `${p.firstName} ${p.lastName}`.trim(), descendants: null };
+} else {
+    fail(`--focus: no person with id ${focusArg}`);
+}
+if (focus) console.log(`Osoba startowa: ${focus.name}${focus.descendants !== null ? ` (${focus.descendants} potomków)` : ''}`);
+
 const json = JSON.stringify(data);
 const sha256 = createHash('sha256').update(json).digest('hex');
 const treeFile = `${id}.json`;
@@ -95,6 +109,7 @@ const manifest = {
     file: treeFile, bytes: Buffer.byteLength(json), sha256,
     persons: report.persons, partnerships: report.partnerships,
     stromDataVersion: data.version,
+    ...(focus ? { focus: focus.id, focusName: focus.name } : {}),
 };
 writeFileSync(join(outDir, `${id}.manifest.json`), JSON.stringify(manifest, null, 2) + '\n');
 console.log(`✓ ${join(outDir, treeFile)} (${Math.round(manifest.bytes / 1024)} kB), manifest ${version}, SHA-256 ${sha256.slice(0, 12)}…`);

@@ -6,7 +6,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { createHash } from 'crypto';
-import { prepareReferenceData, reviewMarkdown, isPrivateLink } from '../ogt/reference-data.js';
+import { prepareReferenceData, reviewMarkdown, isPrivateLink, pickFocusPerson } from '../ogt/reference-data.js';
 import { verifyTreeBytes, compareVersions, ReferenceManifest } from '../ogt/reference-tree.js';
 import { StromData, Person, Partnership, PersonId, PartnershipId, Gender } from '../types.js';
 
@@ -99,6 +99,26 @@ describe('preparing a reference tree', () => {
         const md = reviewMarkdown(report, 'Test');
         expect(md).toContain('Oznaczone do sprawdzenia (1)');
         expect(md).toContain('> Pracował w kopalni do 1965.');
+    });
+});
+
+describe('the person a reference tree opens on', () => {
+    it('is the dated ancestor with the most descendants, private links and undated records aside', () => {
+        const kids = (ids: string[]) => ids as PersonId[];
+        const input = tree([
+            P('u', 'Szymon', 'Szopa', { childIds: kids(['w']) }),                         // most descendants, but no date
+            P('w', 'Wawrzyniec', 'Świerc', { birthDate: '1740', childIds: kids(['a', 'b']) }),
+            P('m', 'Marianna', 'Szopa', { gender: 'female', birthDate: '1747', childIds: kids(['a', 'b']) }),
+            P('a', 'Jan', 'Świerc', { birthDate: '1770', childIds: kids(['c']) }),
+            P('b', 'Anna', 'Świerc', { gender: 'female', birthDate: '1772' }),
+            P('c', 'Józef', 'Świerc', { birthDate: '1800' }),
+            P('p', 'Osoba', 'prywatna', { childIds: kids(['a', 'b', 'c', 'w', 'm']) }),
+        ]);
+        expect(pickFocusPerson(input)).toEqual({ id: 'w', name: 'Wawrzyniec Świerc', descendants: 3 });
+    });
+
+    it('is none in a tree without dated parents', () => {
+        expect(pickFocusPerson(tree([P('a', 'Jan', 'Krus', { birthDate: '1900' })]))).toBeNull();
     });
 });
 
