@@ -20,6 +20,7 @@ import { DebugOptions, DebugStep, DebugPhase } from './layout/pipeline/debug-typ
 import { CryptoSession } from './crypto.js';
 import { AppMode, APP_VERSION, TreeId } from './types.js';
 import { strings } from './strings.js';
+import './ogt/branding.js'; // OGT: OpenGenTree name in the About dialog
 import { onTreeSavedElsewhere } from './tab-sync.js';
 import { StorageManager } from './storage.js';
 import { PERSISTENCE_EVENT } from './persistence.js';

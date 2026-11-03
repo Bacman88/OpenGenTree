@@ -23,6 +23,7 @@
 
 import { readFileSync, writeFileSync, rmSync, mkdirSync, existsSync, statSync } from 'fs';
 import { join } from 'path';
+import { BRAND_NAME, BRAND_CSS, markSvg, faviconHref } from './brand.mjs';
 
 const SOURCE_URL = process.env.OGT_SOURCE_URL || 'https://github.com/Bacman88/OpenGenTree';
 const BUILD_FILE = 'strom.html';
@@ -63,6 +64,44 @@ html = replaceOnce(
     `id="about-source" href="${SOURCE_URL}"`,
     'About dialog source link',
 );
+
+// ---------- 2b. OpenGenTree brand (OGT-011): name, logo, favicon, palette ----------
+// The author's notice stays; the About dialog says it is a fork of Strom
+// (texts: src/ogt/branding.ts). Only the published copy changes.
+html = replaceOnce(html, '<title>Strom</title>', `<title>${BRAND_NAME}</title>`, 'page title');
+html = html.replace(/<link rel="icon" type="image\/svg\+xml" href="[^"]*">/, () =>
+    `<link rel="icon" type="image/svg+xml" href="${faviconHref()}">`);
+if (!html.includes(faviconHref())) fail('favicon: Strom\'s <link rel="icon"> not found');
+html = replaceOnce(
+    html,
+    'data-i18n-title="about.title">Strom<span class="wordmark-dot" aria-hidden="true"></span>',
+    `data-i18n-title="about.title">${markSvg('ogt-mark', 24)}${BRAND_NAME}`,
+    'toolbar wordmark',
+);
+{
+    // Phone toolbar: the tree icon that opens the About dialog.
+    const icon = html.match(/(<button type="button" class="toolbar-tree-icon"[^>]*>)<svg[^>]*>[\s\S]*?<\/svg>(<\/button>)/g) || [];
+    if (icon.length !== 1) fail(`phone toolbar icon: expected 1 match, found ${icon.length}`);
+    html = html.replace(icon[0], () => icon[0].replace(/<svg[^>]*>[\s\S]*?<\/svg>/, markSvg('ogt-mark', 26)));
+}
+{
+    const about = html.match(/<svg class="about-logo"[^>]*>[\s\S]*?<\/svg>/g) || [];
+    if (about.length !== 1) fail(`About dialog logo: expected 1 match, found ${about.length}`);
+    html = html.replace(about[0], () => markSvg('about-logo ogt-mark', 34));
+}
+html = replaceOnce(
+    html,
+    '<span class="about-title">Strom <span id="about-version">',
+    `<span class="about-title">${BRAND_NAME} <span id="about-version">`,
+    'About dialog title',
+);
+{
+    // The page's own </head> is the first one; later ones live in the
+    // inlined script (export templates) and must stay as they are.
+    const at = html.indexOf('</head>');
+    if (at < 0 || !/^<\/head>\s*<body/.test(html.slice(at, at + 40))) fail('</head> of the page not found before <body>');
+    html = html.slice(0, at) + `<style id="ogt-brand">${BRAND_CSS}</style>\n` + html.slice(at);
+}
 
 // ---------- 3. every local reference must exist in public/ ----------
 // The app is one file: any relative src/href would 404 on the server.
