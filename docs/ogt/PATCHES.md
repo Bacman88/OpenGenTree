@@ -16,6 +16,8 @@ Nowy kod OpenGenTree żyje w osobnych miejscach (`src/ogt/`, `scripts/ogt/`, `do
 
 Przy scalaniu wydania Stroma, które zmienia `deploy.yml`, git zgłosi konflikt „zmieniony u nich / usunięty u nas”. Rozwiązanie: zostawić plik usunięty (`git rm .github/workflows/deploy.yml`); ewentualne nowe kroki sprawdzające warto przenieść do `ci.yml`.
 
+Drzewo wzorcowe (OGT-050, `src/ogt/reference-tree.ts`) korzysta z publicznych metod Stroma (`DataManager.importAsNewTree`, `TreeManager.duplicateTree`, `deleteTree`, `saveTreeData`, `getTreeMetadata`) i przy starcie podmienia w pamięci `TreeManager.toggleTreeLock`, żeby drzewa wzorcowego nie dało się odblokować. Jeśli upstream zmieni te metody, sprawdź `src/ogt/reference-tree.ts` (test w przeglądarce opisany w `docs/ogt/REFERENCE-TREE.md`).
+
 Formularz osoby (OGT-041, `src/ogt/person-form.ts`) zmienia kolejność i widoczność pól na stronie zbudowanej przez Stroma, bez zmian w `index.html` ani `person-modal.ts`. Uwaga dla testów e2e Stroma: pola daty i miejsca zgonu są ukryte, dopóki „Nie żyje” jest wyłączone — test, który wpisuje datę zgonu bez włączenia przełącznika, trzeba będzie dostosować.
 
 `index.html` w repozytorium pozostaje bez zmian: link do źródeł forka i markę OpenGenTree (tytuł, favicon, znak w pasku i w oknie „O programie”, paleta — `docs/ogt/BRANDING.md`) dopisuje skrypt `scripts/ogt/prepare-public.mjs` w kopii publikowanej. Jeśli upstream zmieni któryś z podmienianych fragmentów, skrypt przerwie build z czytelnym komunikatem.

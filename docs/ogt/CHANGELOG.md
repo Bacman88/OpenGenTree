@@ -2,6 +2,17 @@
 
 OpenGenTree to fork aplikacji [Strom](https://github.com/ACiDekCZ/strom) Milana Víška (AGPL-3.0-or-later). Wersje OpenGenTree są numerowane osobno; przy każdej podana jest wersja Stroma, na której bazuje. Zmiany samego Stroma: [lista zmian Stroma](https://github.com/ACiDekCZ/strom/blob/main/CHANGELOG.md).
 
+## 0.3.0 — 2026-11-03
+
+Na bazie Strom 3.21.2.
+
+**Drzewo wzorcowe „Rodowód Sołectwa Strzebiń”** (OGT-050)
+
+- Nowa pozycja w menu nowego drzewa i na ekranie startowym: „Rodowód Sołectwa Strzebiń”. Drzewo jest pobierane z serwera i dodawane tylko do odczytu; nie da się go odblokować, ale można zapisać jego edytowalną kopię albo usunąć je z listy.
+- Twoje drzewa są automatycznie porównywane z drzewem wzorcowym (Smart Matches): przy osobie, która jest też we wzorcu, pojawia się znaczek ⇄ — także gdy nazwisko lub miejscowość zapisano inaczej (słownik wariantów z 0.2.0).
+- Nowe wersje drzewa wzorcowego są pobierane automatycznie, ale zastępują poprzednią dopiero po pełnym sprawdzeniu pliku; Twoje kopie zostają bez zmian.
+- Dane drzewa są przygotowywane z dbałością o prywatność: osoby żyjące są zanonimizowane, przyczyny zgonów od 1980 r. usunięte.
+
 ## 0.2.0 — 2026-11-03
 
 Na bazie Strom 3.21.2.
