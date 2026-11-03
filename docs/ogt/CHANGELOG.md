@@ -2,6 +2,21 @@
 
 OpenGenTree to fork aplikacji [Strom](https://github.com/ACiDekCZ/strom) Milana Víška (AGPL-3.0-or-later). Wersje OpenGenTree są numerowane osobno; przy każdej podana jest wersja Stroma, na której bazuje. Zmiany samego Stroma: [lista zmian Stroma](https://github.com/ACiDekCZ/strom/blob/main/CHANGELOG.md).
 
+## 0.4.0 — 2026-11-03
+
+Na bazie Strom 3.21.2.
+
+**Daty i miejscowości w formularzach** (OGT-060)
+
+- **Kalendarz przy każdym polu daty** (urodzenie, zgon, wydarzenia, związki): ikona otwiera kalendarz przeglądarki, a wybrana data trafia do pola w formacie aplikacji (np. 15.5.1880). Pole nadal przyjmuje daty częściowe i przybliżone („1880”, „5.1880”, „ok. 1880”, „przed 1900”, „1880..1885”).
+- **Podgląd pod polem**: jak aplikacja rozumie wpisaną datę — „15 maja 1880”, „ok. 3 kwietnia 1850”. Błędna data (np. 31.2.1880) jak dotąd dostaje czerwoną ramkę.
+- **Podpowiedzi miejscowości** w polach miejsca (urodzenie, zamieszkanie, zgon, wydarzenia, śluby): najpierw miejscowości z Twojego drzewa (najczęściej używane na górze), potem ze słownika wariantów, potem z „Rodowodu Sołectwa Strzebiń”, jeśli jest dodany. Polskie znaki są opcjonalne („la” → Łazy, „koszec” → Koszęcin), działają też dawne zapisy („Koschen” → Koszęcin). Wybór strzałkami i Enterem albo myszą.
+- To tylko podpowiedzi: można wpisać dowolną nazwę, nic nie jest poprawiane automatycznie.
+
+**Szybsze wyszukiwanie osób**
+
+- Wyszukiwarka w pasku i okna wyboru osoby nie zacinają się już na dużych drzewach: przy ~6 700 osobach (Rodowód) jedno naciśnięcie klawisza zajmowało kilka sekund, teraz ok. 0,1 s. Poprawka błędu Stroma (przy każdej osobie liczono od nowa całe drzewo).
+
 ## 0.3.0 — 2026-11-03
 
 Na bazie Strom 3.21.2.

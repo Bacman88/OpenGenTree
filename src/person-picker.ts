@@ -10,7 +10,7 @@ import { normalizeSearchText as normalizeText, alternateNames, nameMatchesQuery 
 import { detailMatch } from './search-filter.js';
 import { displayYear } from './dates.js';
 import { nameHtml, surnameDisplay, shownNameParts, shownSurnameIsBirth, titlesShown } from './person-name.js';
-import { surnameForms } from './surnames.js';
+import { surnameForms, withSurnameRules } from './surnames.js';
 
 /**
  * Sort persons by name (lastName, firstName)
@@ -71,12 +71,13 @@ export function filterAndSort(query: string, persons: Person[], data: StromData 
         return [...persons].sort(sortByName);
     }
 
-    // Score and filter matching persons
-    return persons
-        .map(p => ({
-            person: p,
-            score: calculateMatchScore(p, normalized, data, details)
-        }))
+    // Score and filter matching persons. One pass over the tree
+    // (withSurnameRules): without it every person's surname forms re-counted
+    // the whole tree — seconds a keystroke at ~6 700 people (OpenGenTree fix).
+    const scored = data
+        ? withSurnameRules(data, () => persons.map(p => ({ person: p, score: calculateMatchScore(p, normalized, data, details) })))
+        : persons.map(p => ({ person: p, score: calculateMatchScore(p, normalized, data, details) }));
+    return scored
         .filter(item => item.score > 0)
         .sort((a, b) => {
             // Higher score first
