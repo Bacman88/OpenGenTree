@@ -14,6 +14,11 @@ Na bazie Strom 3.21.2.
 - Warianty pomagają znaleźć tę samą osobę zapisaną inaczej, ale same jej nie dowodzą: zgodne nazwisko czy miejscowość tylko podnosi wynik, a nic nie jest scalane ani poprawiane automatycznie. Oryginalna pisownia w drzewie zostaje bez zmian.
 - Wszystkie wpisy startowe mają status „do weryfikacji”; słownik będzie rozbudowywany na podstawie GEDCOM-u.
 
+**Formularz osoby** (OGT-041)
+
+- Przełącznik „Nie żyje” jest na górze sekcji „Zgon i inne wydarzenia”; data, miejsce, szczegóły i źródła zgonu pojawiają się dopiero po jego włączeniu.
+- Wpisane dane zgonu nigdy nie są ukrywane: jeśli osoba ma datę lub miejsce zgonu, pola są widoczne niezależnie od przełącznika.
+
 ## 0.1.0 — 2026-11-03
 
 Na bazie Strom 3.21.2.
