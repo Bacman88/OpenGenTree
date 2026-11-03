@@ -7,6 +7,7 @@ Nowy kod OpenGenTree żyje w osobnych miejscach (`src/ogt/`, `scripts/ogt/`, `do
 | `src/types.ts` | `AppMode` dostaje wartość `'server'` | OGT-009 |
 | `src/pwa.ts` | import `isOgtHost`; w `appModeFor` domeny OpenGenTree zwracają `'server'` | OGT-009 |
 | `package.json` | skrypt `build:public` | OGT-009 |
+| `package.json` | skrypt `deploy:joton` (build + publikacja do `public_html`) | OGT-010 |
 | `.gitignore` | `/public/` (katalog generowany) | OGT-009 |
 | `.github/workflows/deploy.yml` | **usunięty**: publikował na GitLab autora i tworzył jego wydania; zastępuje go `.github/workflows/ci.yml` (sprawdzenia bez publikacji) | OGT-009 |
 

@@ -6,6 +6,7 @@
   "scripts": {
     "build": "node scripts/bundle.js",
     "build:public": "node scripts/bundle.js && node scripts/ogt/prepare-public.mjs",
+    "deploy:joton": "npm run build:public && node scripts/ogt/publish-webroot.mjs",
     "build:dev": "esbuild src/main.ts --bundle --sourcemap --outfile=dist/bundle.js",
     "watch": "esbuild src/main.ts --bundle --sourcemap --outfile=dist/bundle.js --watch",
     "dev": "npm run build:dev && npx http-server -p 8080 -c-1",
