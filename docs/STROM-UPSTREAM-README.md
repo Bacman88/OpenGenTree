@@ -1,0 +1,171 @@
+# Strom
+
+Family tree application that runs entirely in your browser. No server required, your data stays with you.
+
+**Online version:** [stromapp.info](https://stromapp.info)
+
+## Features
+
+**People & Records**
+- Add, edit, delete persons; multiple marriages, divorces, step-siblings
+- Adoptive, step and foster parent-child relationships (drawn distinctly)
+- Flexible dates ("around 1880", "before 1900", year only)
+- Photos, life events (baptism, occupation, residence…), notes
+- Sources & citations with a per-tree catalog; document attachments (scans, PDFs)
+- Duplicate hints while typing; family wizard (add a whole family in one form)
+- Undo/redo for every change
+
+**Visualization**
+- Interactive tree with generation rows; zoom (scroll/pinch) and pan (drag/swipe)
+- Family, descendants-only and timeline view modes
+- Overview minimap for large trees; advanced search filters with in-tree highlighting
+- Relationship calculator ("second cousin once removed")
+- Tree overview: where to focus, ancestors by generation and the four grandparent lines, age at death, data quality; anniversaries panel and "on this day" reminders
+- Responsive design (desktop, tablet, mobile — long-press action sheet on touch)
+- Light/dark theme
+
+**Family Collaboration (no cloud)**
+- "Send to a relative": e-mail a single file with a personal note
+- The recipient opens it, fills in their branch, and sends it back with one click
+- Strom recognises the returned file and offers a side-by-side merge
+
+**Tree Management**
+- Multiple trees in one app; rename, duplicate, delete
+- Smart merge with conflict resolution; validation; tree overview
+- Automatic versioned backups with one-click restore (time capsules)
+- Person and tree locking
+
+**Import / Export / Print**
+- GEDCOM import & export (Ancestry, FamilySearch, Gramps; events, sources, PEDI)
+- JSON export/import; HTML file import; branch-only export
+- Standalone HTML file export (the whole app + data, works offline)
+- Printable family book (chapters, sources as footnotes, person index)
+- Poster export (SVG / PNG / tiled print)
+- Living-person privacy filter for every export (initials / anonymous / minimal)
+
+**Privacy & Offline**
+- No server, no accounts, no tracking — data stays in your browser
+- Optional AES-256 encryption; password-protected exports
+- Installable PWA with full offline mode
+
+**Two Ways to Use**
+
+| Online Version | Standalone File |
+|----------------|-----------------|
+| [stromapp.info](https://stromapp.info) | Download `strom.html` |
+| PWA - install to home screen | Works offline, no internet needed |
+| Data in browser storage | Data in browser storage (separate) |
+| Always latest version | Version frozen at download time |
+
+Note: Online and standalone versions use separate storage. To transfer data between them, use JSON export/import or import the HTML file directly.
+
+**Other**
+- Person search (live search + URL parameter)
+- English and Czech language
+- Offline support (PWA)
+
+## Quick Start
+
+### Online
+Visit [stromapp.info](https://stromapp.info) and start adding your family.
+
+### Standalone
+Download `strom.html` from [Releases](https://github.com/ACiDekCZ/strom/releases) and open in any browser.
+
+### Build from Source
+```bash
+git clone https://github.com/ACiDekCZ/strom.git
+cd strom
+npm install
+npm run build
+# Output: strom.html
+```
+
+## Usage
+
+- **Add Person** - Click "+ Add Person" or use the button on empty state
+- **Edit Person** - Click on any person card to edit details or manage relationships
+- **Navigate** - Drag to pan, scroll to zoom, or use zoom controls
+- **Focus** - Click person → "Focus" to see only their immediate family
+- **Export** - Actions → Export… → "App with data (HTML)" saves the tree as a portable HTML file
+- **Import** - the tree switcher → Import…: JSON, GEDCOM and Strom HTML files
+
+## Technology
+
+- TypeScript with strict mode
+- esbuild for bundling
+- No runtime dependencies
+- Single HTML file output (~550kb)
+- Works offline in any modern browser
+- Progressive Web App (PWA) support
+
+## Development
+
+```bash
+npm run watch    # Dev mode with auto-rebuild
+npm run build    # Production build
+npm run typecheck # Type checking
+npm test         # Run tests
+```
+
+## License
+
+Copyright © 2026 Milan Víšek.
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+details.
+
+You should have received a copy of the GNU Affero General Public License along
+with this program. If not, see https://www.gnu.org/licenses/. See
+[LICENSE](LICENSE).
+
+The source code of the running app (https://stromapp.info/run/) is at
+https://github.com/ACiDekCZ/strom; the app links to it in its About dialog.
+
+"Strom" is the name of the original project (https://stromapp.info);
+please give a modified version a name of its own.
+
+### Third-party components
+
+These keep their own licenses; their notices and license texts are also
+embedded in the app's HTML (a comment in `<head>`):
+
+- **Strom Serif** font: a modified (subsetted) version of **Source Serif 4**
+  (upright, and the italic embedded in the family book), renamed as its
+  Reserved Font Name requires. Source Serif 4 was designed by Frank
+  Grießhammer for Adobe. Source Serif 4: Copyright 2014 - 2021 Adobe Systems
+  Incorporated, with Reserved Font Name "Source"; SIL Open Font License 1.1.
+- **Instrument Sans** font: Copyright 2022 The Instrument Sans Project
+  Authors; SIL Open Font License 1.1.
+- Some interface icons come from or are based on **Lucide** (ISC License,
+  Copyright (c) Lucide Icons and Contributors) and **Feather** (MIT License,
+  Copyright (c) 2013-2023 Cole Bemis).
+- The person page's map draws country outlines from **Natural Earth**
+  (https://www.naturalearthdata.com, public domain), as packaged in
+  **world-atlas** 2.0.2 (ISC License, Copyright 2013-2019 Michael Bostock);
+  an extract is bundled in `src/map-outlines-data.ts`.
+- For a small neighbourhood the map adds towns, rivers and first-level
+  regions from **Natural Earth** (populated places, rivers and lake
+  centrelines, admin-1 states and provinces; public domain), with country
+  polygons from **world-atlas** as above; an extract is bundled in
+  `src/map-context-data.ts`.
+- Map tiles are loaded at run time from OpenStreetMap (© OpenStreetMap
+  contributors, https://www.openstreetmap.org/copyright); the map shows this
+  attribution.
+
+## Authors
+
+Authors: Milan Víšek and Claude (Anthropic)
+
+[stromapp.info](https://stromapp.info)
+
+---
+
+*Strom - Your family history, always with you.*

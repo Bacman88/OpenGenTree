@@ -1,171 +1,104 @@
-# Strom
+# OpenGenTree 🌳
 
-Family tree application that runs entirely in your browser. No server required, your data stays with you.
+**Twoje drzewo. Nasza wspólna historia.**  
+*Your tree. Our shared history.*
 
-**Online version:** [stromapp.info](https://stromapp.info)
+[![License: AGPL-3.0-or-later](https://img.shields.io/badge/license-AGPL--3.0--or--later-blue)](LICENSE)
+[![Project status: early development](https://img.shields.io/badge/status-early%20development-orange)](docs/ROADMAP.md)
+[![Based on Strom](https://img.shields.io/badge/based%20on-Strom-green)](https://github.com/ACiDekCZ/strom)
 
-## Features
+> [!IMPORTANT]
+> **OpenGenTree is in early development.** This repository currently contains a fork of **Strom**. User accounts, online storage, permissions and community Smart Matches are **planned**, not available features. Please do not upload sensitive genealogy data to the test deployment.
 
-**People & Records**
-- Add, edit, delete persons; multiple marriages, divorces, step-siblings
-- Adoptive, step and foster parent-child relationships (drawn distinctly)
-- Flexible dates ("around 1880", "before 1900", year only)
-- Photos, life events (baptism, occupation, residence…), notes
-- Sources & citations with a per-tree catalog; document attachments (scans, PDFs)
-- Duplicate hints while typing; family wizard (add a whole family in one form)
-- Undo/redo for every change
+## What is OpenGenTree?
 
-**Visualization**
-- Interactive tree with generation rows; zoom (scroll/pinch) and pan (drag/swipe)
-- Family, descendants-only and timeline view modes
-- Overview minimap for large trees; advanced search filters with in-tree highlighting
-- Relationship calculator ("second cousin once removed")
-- Tree overview: where to focus, ancestors by generation and the four grandparent lines, age at death, data quality; anniversaries panel and "on this day" reminders
-- Responsive design (desktop, tablet, mobile — long-press action sheet on touch)
-- Light/dark theme
+OpenGenTree is a planned **free, open-source genealogy platform**, built on [Strom](https://github.com/ACiDekCZ/strom) by Milan Víšek. Our goal is to keep Strom's approachable family-tree editor and optional offline workflow while gradually adding:
 
-**Family Collaboration (no cloud)**
-- "Send to a relative": e-mail a single file with a personal note
-- The recipient opens it, fills in their branch, and sends it back with one click
-- Strom recognises the returned file and offers a side-by-side merge
+- **User accounts and server-side tree storage**, with export and backups.
+- **Family collaboration:** invite others to view or edit a tree, with explicit permissions.
+- **Privacy by design:** protect living people and their identifying information in public/community views.
+- **Smart Matches**, in two stages: first between your own local trees, later between participating users' historical records.
+- **Independent trees:** matches are suggestions, **never automatic cross-user merges**.
 
-**Tree Management**
-- Multiple trees in one app; rename, duplicate, delete
-- Smart merge with conflict resolution; validation; tree overview
-- Automatic versioned backups with one-click restore (time capsules)
-- Person and tree locking
+The project is **non-commercial in intent**: no ads, subscriptions or paid genealogy features are planned. Infrastructure support may be considered if hosting costs grow.
 
-**Import / Export / Print**
-- GEDCOM import & export (Ancestry, FamilySearch, Gramps; events, sources, PEDI)
-- JSON export/import; HTML file import; branch-only export
-- Standalone HTML file export (the whole app + data, works offline)
-- Printable family book (chapters, sources as footnotes, person index)
-- Poster export (SVG / PNG / tiled print)
-- Living-person privacy filter for every export (initials / anonymous / minimal)
+A single shared/global family tree is **not part of the current implementation plan**. It is a possible long-term idea, not a promised feature.
 
-**Privacy & Offline**
-- No server, no accounts, no tracking — data stays in your browser
-- Optional AES-256 encryption; password-protected exports
-- Installable PWA with full offline mode
+## Current status
 
-**Two Ways to Use**
+| Capability | Status |
+| --- | --- |
+| Family-tree editor, visualizations, GEDCOM, sources, exports | Available in upstream Strom |
+| Browser-based local trees and offline-capable workflows | Available in upstream Strom (deployment-dependent) |
+| Local cross-tree matching | Exists in upstream Strom; OpenGenTree improvements planned |
+| OpenGenTree-specific branding and deployment packaging | In preparation |
+| User registration, server storage and synchronization | Planned |
+| Invitations, roles and public historical views | Planned |
+| Smart Matches between different users' trees | Planned for a later phase |
 
-| Online Version | Standalone File |
-|----------------|-----------------|
-| [stromapp.info](https://stromapp.info) | Download `strom.html` |
-| PWA - install to home screen | Works offline, no internet needed |
-| Data in browser storage | Data in browser storage (separate) |
-| Always latest version | Version frozen at download time |
+**Live test address:** [opengentree.smart-ant.pl](https://opengentree.smart-ant.pl) — experimental deployment; availability and functionality may change. It is **not** a production genealogy service.
 
-Note: Online and standalone versions use separate storage. To transfer data between them, use JSON export/import or import the HTML file directly.
+See the [development roadmap](docs/ROADMAP.md) for the agreed scope and stages.
 
-**Other**
-- Person search (live search + URL parameter)
-- English and Czech language
-- Offline support (PWA)
+## Our approach to privacy
 
-## Quick Start
+Three modes are planned **per tree**, not per account:
 
-### Online
-Visit [stromapp.info](https://stromapp.info) and start adding your family.
+| Mode | Who can view the tree? | Community matching |
+| --- | --- | --- |
+| **Private** | Owner and authorized invitees | No |
+| **Community** | Owner and authorized invitees; selected historical records may be shared for matches | Yes, opt-in |
+| **Public** | Public historical view; full view only for authorized users | Yes, opt-in |
 
-### Standalone
-Download `strom.html` from [Releases](https://github.com/ACiDekCZ/strom/releases) and open in any browser.
+Living people's records must never be exposed to unauthorized users through APIs, search, media, notes or family relationships. An explicit “living” status takes precedence; for a person with unknown status, an age of 120 years may support **probable death**, but is not proof. Server-side filtering and conservative defaults are required **before** any public/community sharing launches.
 
-### Build from Source
+For community matching, private trees do not contribute records and do not gain community matching access through those trees. Local matching between trees under the same owner's control remains available.
+
+## Build the current code
+
+Requirements: a compatible Node.js/npm environment (see the repository's tooling).
+
 ```bash
-git clone https://github.com/ACiDekCZ/strom.git
-cd strom
-npm install
+git clone https://github.com/Bacman88/OpenGenTree.git
+cd OpenGenTree
+npm ci
 npm run build
-# Output: strom.html
 ```
 
-## Usage
+The upstream build generates `strom.html` (standalone HTML) and `dist/bundle.js`; the repository also contains an `index.html` template. **A successful build is not by itself a configured web deployment.** The Joton deployment output directory is being standardized separately.
 
-- **Add Person** - Click "+ Add Person" or use the button on empty state
-- **Edit Person** - Click on any person card to edit details or manage relationships
-- **Navigate** - Drag to pan, scroll to zoom, or use zoom controls
-- **Focus** - Click person → "Focus" to see only their immediate family
-- **Export** - Actions → Export… → "App with data (HTML)" saves the tree as a portable HTML file
-- **Import** - the tree switcher → Import…: JSON, GEDCOM and Strom HTML files
-
-## Technology
-
-- TypeScript with strict mode
-- esbuild for bundling
-- No runtime dependencies
-- Single HTML file output (~550kb)
-- Works offline in any modern browser
-- Progressive Web App (PWA) support
-
-## Development
+Useful commands:
 
 ```bash
-npm run watch    # Dev mode with auto-rebuild
-npm run build    # Production build
-npm run typecheck # Type checking
-npm test         # Run tests
+npm run typecheck
+npm test
+npm run test:e2e:smoke
 ```
 
-## License
+The build and test commands above describe how to run checks; they are **not** a claim that this fork currently passes all checks.
 
-Copyright © 2026 Milan Víšek.
+## Development and contributions
 
-This program is free software: you can redistribute it and/or modify it under
-the terms of the GNU Affero General Public License as published by the Free
-Software Foundation, either version 3 of the License, or (at your option) any
-later version.
+OpenGenTree is developed as a fork to make it possible to incorporate future improvements from Strom:
 
-This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
-details.
+- Keep OpenGenTree features in separate modules wherever possible (for example `src/ogt/` and `server/` when introduced).
+- Prefer small, documented integration points over changing the original editor.
+- Develop changes in feature branches and review them through pull requests.
+- Keep `main` suitable for tested releases; production deployment should not automatically follow unreviewed feature branches.
+- Never commit credentials, private family trees or sensitive media.
 
-You should have received a copy of the GNU Affero General Public License along
-with this program. If not, see https://www.gnu.org/licenses/. See
-[LICENSE](LICENSE).
+For now, issues and pull requests can be discussed in the [OpenGenTree repository](https://github.com/Bacman88/OpenGenTree/issues).
 
-The source code of the running app (https://stromapp.info/run/) is at
-https://github.com/ACiDekCZ/strom; the app links to it in its About dialog.
+## Credits, upstream and licensing
 
-"Strom" is the name of the original project (https://stromapp.info);
-please give a modified version a name of its own.
+OpenGenTree is **based on [Strom](https://github.com/ACiDekCZ/strom)**, originally created by **Milan Víšek**, with **Claude (Anthropic)** credited as a contributor in the upstream project.
 
-### Third-party components
+Strom and this derivative project are distributed under the **GNU Affero General Public License, version 3 or later (AGPL-3.0-or-later)**. See [LICENSE](LICENSE). Source code for modifications made available as a network service must be offered in accordance with the AGPL, including its network-use provisions.
 
-These keep their own licenses; their notices and license texts are also
-embedded in the app's HTML (a comment in `<head>`):
+Original Strom notices and the upstream project's description, including third-party components and attributions, are preserved in [the upstream README](docs/STROM-UPSTREAM-README.md). Third-party materials retain their applicable licenses.
 
-- **Strom Serif** font: a modified (subsetted) version of **Source Serif 4**
-  (upright, and the italic embedded in the family book), renamed as its
-  Reserved Font Name requires. Source Serif 4 was designed by Frank
-  Grießhammer for Adobe. Source Serif 4: Copyright 2014 - 2021 Adobe Systems
-  Incorporated, with Reserved Font Name "Source"; SIL Open Font License 1.1.
-- **Instrument Sans** font: Copyright 2022 The Instrument Sans Project
-  Authors; SIL Open Font License 1.1.
-- Some interface icons come from or are based on **Lucide** (ISC License,
-  Copyright (c) Lucide Icons and Contributors) and **Feather** (MIT License,
-  Copyright (c) 2013-2023 Cole Bemis).
-- The person page's map draws country outlines from **Natural Earth**
-  (https://www.naturalearthdata.com, public domain), as packaged in
-  **world-atlas** 2.0.2 (ISC License, Copyright 2013-2019 Michael Bostock);
-  an extract is bundled in `src/map-outlines-data.ts`.
-- For a small neighbourhood the map adds towns, rivers and first-level
-  regions from **Natural Earth** (populated places, rivers and lake
-  centrelines, admin-1 states and provinces; public domain), with country
-  polygons from **world-atlas** as above; an extract is bundled in
-  `src/map-context-data.ts`.
-- Map tiles are loaded at run time from OpenStreetMap (© OpenStreetMap
-  contributors, https://www.openstreetmap.org/copyright); the map shows this
-  attribution.
-
-## Authors
-
-Authors: Milan Víšek and Claude (Anthropic)
-
-[stromapp.info](https://stromapp.info)
+**OpenGenTree is an independent derivative project, not an official release of Strom.** The name and links of the original project remain credited; OpenGenTree has its own identity.
 
 ---
 
-*Strom - Your family history, always with you.*
+*OpenGenTree — open genealogy, with respect for both family history and living people's privacy.*
