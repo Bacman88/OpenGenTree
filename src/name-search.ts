@@ -10,6 +10,7 @@
 import { Person, StromData } from './types.js';
 import { surnameForms } from './surnames.js';
 import { normalizeName } from './merge/matching.js';
+import { derivedSurnames } from './ogt/search-names.js';  // OGT-061
 
 /**
  * Lowercase, strip diacritics and punctuation, collapse whitespace (the same
@@ -28,6 +29,8 @@ export function searchableSurnames(person: Person, data: StromData | null | unde
     const forms = [
         ...formsOf(person.lastName ?? ''),
         ...(person.marriedSurname ? formsOf(person.marriedSurname) : []),
+        // OGT-061: the husbands' surnames and the father's (maiden name), when not written on the person.
+        ...(() => { const d = derivedSurnames(person, data); return [...d.married, ...d.maiden].flatMap(formsOf); })(),
     ];
     const out: string[] = [];
     for (const f of forms) {

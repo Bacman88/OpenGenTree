@@ -12,6 +12,9 @@ Nowy kod OpenGenTree żyje w osobnych miejscach (`src/ogt/`, `scripts/ogt/`, `do
 | `src/given-names.ts` | polskie formy w grupach imion, nowe grupy śląskie, `ł` jako `l`, eksport `givenNameKey` | OGT-040 |
 | `src/merge/matching.ts` | `givenNameSimilarity` (grupy imion + słownik); imiona porównywane przez klucz grupy; nazwiska (`lastNamesSimilar`, rodzice, partnerzy, `quickMatch`) i miejsce urodzenia przez słownik wariantów — linie oznaczone `OGT-040` | OGT-040 |
 | `src/person-picker.ts` | `filterAndSort` liczy wyniki w jednym przebiegu `withSurnameRules` (jak `search-filter.ts`); bez tego wyszukiwanie osoby było kwadratowe względem wielkości drzewa — kilka sekund na klawisz przy ~6 700 osobach. Do zgłoszenia upstream. | OGT-060 |
+| `src/name-search.ts` | `searchableSurnames` dodaje nazwiska mężów i ojca (`derivedSurnames` z `src/ogt/search-names.ts`) | OGT-061 |
+| `src/person-name.ts` | `setShownSurnameFallback`: osoba bez nazwiska i bez nazwiska po ślubie wyświetla nazwisko podane przez OpenGenTree (ostatni mąż, `src/ogt/married-name.ts`); bez ustawionego hooka zachowanie Stroma bez zmian | OGT-061 |
+| `src/person-picker.ts` | lista wyników: dopisek „po mężu / z domu / żona / córka” (`personContextLine`), gdy Strom nie pokazuje własnego | OGT-061 |
 | `.gitignore` | `/public/` (katalog generowany) | OGT-009 |
 | `.github/workflows/deploy.yml` | **usunięty**: publikował na GitLab autora i tworzył jego wydania; zastępuje go `.github/workflows/ci.yml` (sprawdzenia bez publikacji) | OGT-009 |
 

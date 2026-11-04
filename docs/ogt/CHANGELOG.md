@@ -2,6 +2,17 @@
 
 OpenGenTree to fork aplikacji [Strom](https://github.com/ACiDekCZ/strom) Milana Víška (AGPL-3.0-or-later). Wersje OpenGenTree są numerowane osobno; przy każdej podana jest wersja Stroma, na której bazuje. Zmiany samego Stroma: [lista zmian Stroma](https://github.com/ACiDekCZ/strom/blob/main/CHANGELOG.md).
 
+## 0.4.1 — 2026-11-03
+
+Na bazie Strom 3.21.2.
+
+**Wyszukiwanie po nazwisku panieńskim i po mężu** (OGT-061)
+
+- Kobieta jest znajdowana także po nazwisku męża (każdego) i po nazwisku ojca, nawet gdy w jej rekordzie wpisano tylko jedno z nich albo żadne. „Marianna Ochmann”, żona Kiliana Ulfika, znajdzie się pod „Ulfik”; „Pietruszewska” znajdzie żonę Stanisława Pietruszewskiego.
+- Na liście wyników widać, dlaczego ktoś został znaleziony: „po mężu: Ulfik”, „z domu: Ochmann”.
+- Kobieta bez wpisanego nazwiska wyświetla się z nazwiskiem ostatniego męża, np. „Franciszka Ulfik” (formy -ski/-cki zmieniane na -ska/-cka), a na liście wyników z dopiskiem „żona: Franciszek Ulfik”. Osoba bez nazwiska i bez męża dostaje dopisek „córka: …” / „syn: …”.
+- To tylko wyświetlanie i wyszukiwanie: rekord i plik GEDCOM się nie zmieniają; po wpisaniu nazwiska w formularzu wyświetla się wpisane.
+
 ## 0.4.0 — 2026-11-03
 
 Na bazie Strom 3.21.2.
