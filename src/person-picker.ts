@@ -11,6 +11,7 @@ import { detailMatch } from './search-filter.js';
 import { displayYear } from './dates.js';
 import { nameHtml, surnameDisplay, shownNameParts, shownSurnameIsBirth, titlesShown } from './person-name.js';
 import { surnameForms, withSurnameRules } from './surnames.js';
+import { personContextLine } from './ogt/search-names.js';  // OGT-061
 
 /**
  * Sort persons by name (lastName, firstName)
@@ -501,9 +502,15 @@ export class PersonPicker {
         return `
             <div class="person-picker-item${index === this.selectedIndex ? ' selected' : ''}"
                  data-id="${this.escapeHtml(person.id)}">
-                ${nameHtml(person)} ${birthYear}${this.hiddenSurnameMatchHtml(person)}${this.detailMatchHtml(person)}
+                ${nameHtml(person)} ${birthYear}${this.hiddenSurnameMatchHtml(person) || this.contextLineHtml(person)}${this.detailMatchHtml(person)}
             </div>
         `;
+    }
+
+    /** OGT-061: found by a husband's or father's surname, or who a person without a surname is. */
+    private contextLineHtml(person: Person): string {
+        const data = this.searchData();
+        return personContextLine(person, this.input.value, data, s => (data ? surnameForms(s, data) : [s]));
     }
 
     /** Found by the surname the shown name leaves out (hiddenSurnameMatchHtml). */

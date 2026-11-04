@@ -37,6 +37,22 @@ import { strings } from './strings.js';
 
 type Named = Pick<Person, 'firstName' | 'lastName' | 'titleBefore' | 'titleAfter' | 'marriedSurname' | 'primaryName'> & { isPlaceholder?: boolean };
 
+/**
+ * OGT-061: the surname shown for a person written without any (a woman known
+ * by her last husband's — src/ogt/married-name.ts sets it). Shown only.
+ */
+let shownSurnameFallback: ((person: Named) => string) | null = null;
+export function setShownSurnameFallback(fn: ((person: Named) => string) | null): void {
+    shownSurnameFallback = fn;
+}
+/** The married surname to show: the written one, else the fallback for a person with no surname at all. */
+function marriedShown(person: Named): string {
+    if (person.isPlaceholder) return '';
+    const written = person.marriedSurname?.trim() ?? '';
+    if (written || person.lastName?.trim() || !shownSurnameFallback) return written;
+    return shownSurnameFallback(person).trim();
+}
+
 /** Whether titles are shown with names (the setting; default on). */
 export function titlesShown(): boolean {
     return SettingsManager.isShowTitles();
@@ -60,7 +76,7 @@ function titlesOf(person: Named, show: boolean): { before: string; after: string
  * for a placeholder) — nothing is hidden then.
  */
 export function shownSurnameIsBirth(person: Named, display = surnameDisplay()): boolean {
-    const married = person.isPlaceholder ? '' : person.marriedSurname?.trim() ?? '';
+    const married = marriedShown(person);  // OGT-061
     return !!married && (display === 'birth' || person.primaryName === 'birth');
 }
 
@@ -82,7 +98,7 @@ export function shownNameParts(person: Named, emptyGiven = '', show = titlesShow
     const { before, after } = titlesOf(person, show);
     const given = person.firstName || emptyGiven;
     const birth = person.lastName ?? '';
-    const married = person.isPlaceholder ? '' : person.marriedSurname?.trim() ?? '';
+    const married = marriedShown(person);  // OGT-061
     const useMarried = !!married && display !== 'birth' && person.primaryName !== 'birth';
     const surname = useMarried ? married : birth;
     return {
