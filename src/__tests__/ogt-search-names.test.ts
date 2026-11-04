@@ -83,8 +83,8 @@ describe('the line under a name in the list', () => {
     });
 
     it('says who a person without a surname is', () => {
-        expect(line('f', 'Franc')).toBe('żona: Franciszek Ulfik');
-        expect(line('x', 'Roz')).toBe('córka: Jan Ochmann');
+        expect(line('f', 'Franc')).toBe('mąż: Franciszek Ulfik');
+        expect(line('x', 'Roz')).toBe('ojciec: Jan Ochmann');
     });
 
     it('says nothing when the name already shows what was searched', () => {
@@ -129,7 +129,7 @@ describe('a woman without a surname is shown under her last husband\'s', () => {
             expect(shownName(f)).toBe('Franciszka Ulfik');
             expect(shownName(d.persons['mo' as PersonId])).toBe('Marianna Ochmann');
             expect(f.lastName).toBe('');
-            expect(personContextLine(f, 'Ulfik', d).replace(/<[^>]+>/g, '')).toBe('żona: Franciszek Ulfik');   // whose surname it is
+            expect(personContextLine(f, 'Ulfik', d).replace(/<[^>]+>/g, '')).toBe('mąż: Franciszek Ulfik');   // whose surname it is
         } finally {
             setShownSurnameFallback(null);
         }
