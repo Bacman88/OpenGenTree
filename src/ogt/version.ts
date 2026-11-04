@@ -5,4 +5,4 @@
  * fork's version; scripts/ogt/prepare-public.mjs reads it from this file.
  * Bump it with every OpenGenTree release (docs/ogt/CHANGELOG.md).
  */
-export const OGT_VERSION = '0.4.1';
+export const OGT_VERSION = '0.4.2';

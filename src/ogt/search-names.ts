@@ -15,7 +15,7 @@
  *
  * Nothing is written into the person: these are search keys only. The list
  * says why someone was found ("po mężu: Ulfik", "z domu: Ochmann") and, for a
- * person with no surname, who they are ("żona: Franciszek Ulfik").
+ * person with no surname, who they are ("mąż: Franciszek Ulfik").
  */
 
 import { Person, PersonId, StromData } from '../types.js';
@@ -111,11 +111,12 @@ export function polishFeminine(surname: string): string {
 
 // ---------- the line under a name in the person list ----------
 
+/** Labels name the relative after the colon ("mąż: Feliks Kita"), not the person found. */
 const TEXT = {
-    pl: { married: 'po mężu', maiden: 'z domu', wife: 'żona', husband: 'mąż', partner: 'partner', daughter: 'córka', son: 'syn', child: 'dziecko' },
-    cs: { married: 'po manželovi', maiden: 'rozená', wife: 'manželka', husband: 'manžel', partner: 'partner', daughter: 'dcera', son: 'syn', child: 'dítě' },
-    de: { married: 'verh.', maiden: 'geb.', wife: 'Ehefrau von', husband: 'Ehemann von', partner: 'Partner', daughter: 'Tochter von', son: 'Sohn von', child: 'Kind von' },
-    en: { married: 'married name', maiden: 'née', wife: 'wife of', husband: 'husband of', partner: 'partner of', daughter: 'daughter of', son: 'son of', child: 'child of' },
+    pl: { married: 'po mężu', maiden: 'z domu', wife: 'żona', husband: 'mąż', partner: 'partner', father: 'ojciec', mother: 'matka', parent: 'rodzic' },
+    cs: { married: 'po manželovi', maiden: 'rozená', wife: 'manželka', husband: 'manžel', partner: 'partner', father: 'otec', mother: 'matka', parent: 'rodič' },
+    de: { married: 'verh.', maiden: 'geb.', wife: 'Ehefrau', husband: 'Ehemann', partner: 'Partner', father: 'Vater', mother: 'Mutter', parent: 'Elternteil' },
+    en: { married: 'married name', maiden: 'née', wife: 'wife', husband: 'husband', partner: 'partner', father: 'father', mother: 'mother', parent: 'parent' },
 };
 const text = () => {
     const l = getCurrentLanguage();
@@ -130,7 +131,7 @@ const fold = (s: string): string => key(s).replace(/[^a-z0-9 ]+/g, ' ').replace(
 /**
  * Who the person is, for the list: why they were found by a surname the name
  * does not show ("po mężu: <mark>Ulfik</mark>"), else, for someone without a
- * surname, the nearest relative ("żona: Franciszek Ulfik", "córka: Jan Krus").
+ * surname, the nearest relative ("mąż: Franciszek Ulfik", "ojciec: Jan Krus").
  * '' when the name says enough. `forms` gives every searchable form of a
  * surname (Strom's surnameForms), so "Pietruszewska" finds "Pietruszewski".
  */
@@ -154,16 +155,16 @@ export function personContextLine(
         if (found) return `<div class="person-picker-match">${esc(label)}: <mark>${esc(found)}</mark></div>`;
     }
 
-    // No surname written (one may be shown from the husband): say whose wife or child.
+    // No surname written (one may be shown from the husband): name the husband or a parent.
     if (clean(person.lastName) || clean(person.marriedSurname)) return '';
     const partner = partnersOf(person, data).find(p => full(p));
     if (partner) {
-        const label = person.gender === 'female' ? t.wife : person.gender === 'male' ? t.husband : t.partner;
+        const label = partner.gender === 'male' ? t.husband : partner.gender === 'female' ? t.wife : t.partner;
         return `<div class="person-picker-match">${esc(label)}: ${esc(full(partner))}</div>`;
     }
     const parent = fatherOf(person, data) ?? (person.parentIds ?? []).map(id => data.persons[id]).find(p => p && !p.isPlaceholder && full(p));
     if (parent && full(parent)) {
-        const label = person.gender === 'female' ? t.daughter : person.gender === 'male' ? t.son : t.child;
+        const label = parent.gender === 'male' ? t.father : parent.gender === 'female' ? t.mother : t.parent;
         return `<div class="person-picker-match">${esc(label)}: ${esc(full(parent))}</div>`;
     }
     return '';
